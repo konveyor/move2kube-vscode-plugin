@@ -1,5 +1,5 @@
 {
-  "name": "mov2kube-vscode-plugin",
+  "name": "move2kube-vscode-plugin",
   "displayName": "m2k",
   "description": "A VSCode extension for the Move2Kube application.",
   "version": "0.0.1",
