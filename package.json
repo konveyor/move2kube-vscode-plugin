@@ -1,0 +1,61 @@
+{
+  "name": "move2kube-vscode-plugin",
+  "displayName": "m2k",
+  "description": "A VSCode extension for the Move2Kube application.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.46.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "m2k.showHelloWorld",
+        "title": "Move2Kube: Hello"
+      },
+      {
+        "command": "m2k.transform",
+        "title": "Move2Kube: Transform"
+      },
+      {
+        "command": "m2k.plan",
+        "title": "Move2Kube: Plan"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "m2k.plan",
+          "group": "move2kube@1"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "install:all": "npm install && cd webview-ui && npm install",
+    "start:webview": "cd webview-ui && npm run start",
+    "build:webview": "cd webview-ui && npm run build",
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/node": "^18.15.3",
+    "@types/vscode": "^1.76.0",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/parser": "^5.55.0",
+    "eslint": "^8.36.0",
+    "glob": "^9.3.0",
+    "prettier": "^2.8.4",
+    "typescript": "^4.9.5",
+    "vscode-test": "^1.5.0"
+  }
+}
