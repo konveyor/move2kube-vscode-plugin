@@ -24,6 +24,10 @@
       {
         "command": "m2k.plan",
         "title": "Move2Kube: Plan"
+      },
+      {
+        "command": "m2k.checkForUpdates",
+        "title": "Move2Kube: Check For Updates"
       }
     ],
     "menus": {
@@ -32,6 +36,11 @@
           "when": "explorerResourceIsFolder",
           "command": "m2k.plan",
           "group": "move2kube@1"
+        },
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "m2k.transform",
+          "group": "move2kube@2"
         }
       ]
     }
@@ -49,6 +58,8 @@
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/node": "^18.15.3",
+    "@types/tar": "^6.1.4",
+    "@types/unzipper": "^0.10.5",
     "@types/vscode": "^1.76.0",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
     "@typescript-eslint/parser": "^5.55.0",
@@ -57,5 +68,11 @@
     "prettier": "^2.8.4",
     "typescript": "^4.9.5",
     "vscode-test": "^1.5.0"
+  },
+  "dependencies": {
+    "@vscode/extension-telemetry": "^0.7.7",
+    "axios": "^1.3.4",
+    "tar": "^6.1.13",
+    "unzipper": "^0.10.11"
   }
 }
