@@ -20,7 +20,6 @@ export async function isCLIInstalled(expectedVersion: string): Promise<boolean> 
     result = child_process.execSync(`${cliName} version`).toString().trim();
 
     const installedVersion = result?.match(/\d+\.\d+\.\d+/)?.[0];
-    vscode.window.showInformationMessage(`Installed Version is : ${installedVersion}`);
     if (!installedVersion) {
       return false;
     }
@@ -29,9 +28,6 @@ export async function isCLIInstalled(expectedVersion: string): Promise<boolean> 
       .split(".")
       .map(Number);
 
-    vscode.window.showInformationMessage(`installedMinor: ${installedMinor}`);
-    vscode.window.showInformationMessage(`installedMajor: ${installedMajor}`);
-    vscode.window.showInformationMessage(`installedPatch: ${installedPatch}`);
     const [expectedMajor, expectedMinor, expectedPatch] = expectedVersion.split(".").map(Number);
 
     if (

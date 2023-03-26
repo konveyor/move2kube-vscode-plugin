@@ -1,12 +1,14 @@
 import * as vscode from "vscode";
 import { HelloWorldPanel } from "./panels/HelloWorldPanel";
-import { getLatestVersionFromGithub, isCLIInstalled } from "./utilities/checkCLI";
+import { isCLIInstalled } from "./utilities/checkCLI";
 import {
   checkForUpdates,
+  createCustomizationTransform,
   createTransform,
   makePlan,
-  setOutputChannelForDesktopCommands,
 } from "./utilities/getHandlers";
+
+import { setOutputChannelForDesktopCommands } from "./utilities/utils";
 
 export async function activate(context: vscode.ExtensionContext) {
   // https://move2kube.konveyor.io/releaseinfo.json
@@ -20,10 +22,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.window.showErrorMessage(
       `move2kube is not installed or installed version is not compatible with the current system.`
     );
-  } else {
-    vscode.window.showInformationMessage(`move2kube is installed and is compatible.`);
   }
-
   //Check for updates.
   const checkForUpdatesCommand = vscode.commands.registerCommand(
     "m2k.checkForUpdates",
@@ -41,9 +40,16 @@ export async function activate(context: vscode.ExtensionContext) {
   // `transform` command.
   const transformCommand = vscode.commands.registerCommand("m2k.transform", createTransform);
 
+  // `transform` command with customizations.
+  const customizationTransformCommand = vscode.commands.registerCommand(
+    "m2k.customizationTransform",
+    createCustomizationTransform
+  );
+
   // Add command to the extension context
   context.subscriptions.push(showHelloWorldCommand);
   context.subscriptions.push(transformCommand);
+  context.subscriptions.push(customizationTransformCommand);
   context.subscriptions.push(planCommand);
   context.subscriptions.push(checkForUpdatesCommand);
 }

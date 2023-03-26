@@ -22,6 +22,10 @@
         "title": "Move2Kube: Transform"
       },
       {
+        "command": "m2k.customizationTransform",
+        "title": "Move2Kube: Transform + Customizations"
+      },
+      {
         "command": "m2k.plan",
         "title": "Move2Kube: Plan"
       },
@@ -41,6 +45,11 @@
           "when": "explorerResourceIsFolder",
           "command": "m2k.transform",
           "group": "move2kube@2"
+        },
+        {
+          "when": "explorerResourceIsFolder",
+          "command": "m2k.customizationTransform",
+          "group": "move2kube@3"
         }
       ]
     }

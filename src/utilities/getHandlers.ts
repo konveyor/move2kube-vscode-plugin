@@ -1,22 +1,40 @@
 import * as vscode from "vscode";
 import * as child_process from "child_process";
 import { getLatestVersionFromGithub } from "./checkCLI";
+import { getTerminalForDesktopCommands, selectFolder, showTimedInformationMessage } from "./utils";
 
 let outputChannel: vscode.OutputChannel;
 
-export function setOutputChannelForDesktopCommands(oc: vscode.OutputChannel) {
-  outputChannel = oc;
-}
-
-export function getTerminalForDesktopCommands() {
-  return vscode.window.createTerminal({
-    name: "Move2Kube",
-  });
+export async function checkForUpdates() {
+  try {
+    vscode.window.withProgress(
+      {
+        location: vscode.ProgressLocation.Notification,
+        title: "Checking for updates...",
+        cancellable: false,
+      },
+      async (progress) => {
+        try {
+          progress.report({ increment: 0 });
+          const latestVersion = await getLatestVersionFromGithub();
+          showTimedInformationMessage(
+            `Latest version for move2kube is : ${latestVersion}.\n If you wish to update to the latest version, please visit: https://move2kube.konveyor.io/installation/ `,
+            5000
+          );
+        } catch (error) {
+          vscode.window.showErrorMessage("Error checking for updates");
+        }
+      }
+    );
+  } catch (err) {
+    vscode.window.showErrorMessage(`Failed to check for updates.\n [ERROR] : ${err}`);
+  }
+  return false;
 }
 
 export async function makePlan(uri: vscode.Uri | undefined) {
   try {
-    vscode.window.showInformationMessage(`Move2Kube: Running plan command...`);
+    showTimedInformationMessage(`Move2Kube: Running plan command...`, 3000);
 
     const cwd =
       uri?.fsPath ||
@@ -37,7 +55,7 @@ export async function makePlan(uri: vscode.Uri | undefined) {
     });
 
     result.on("exit", () =>
-      vscode.window.showInformationMessage(`Successfully generated plan for ${cwd} directory.`)
+      showTimedInformationMessage(`Successfully generated plan for ${cwd} directory.`, 3000)
     );
   } catch (err) {
     vscode.window.showErrorMessage(`Failed to generate plan.\n [ERROR] : ${err}`);
@@ -47,8 +65,7 @@ export async function makePlan(uri: vscode.Uri | undefined) {
 
 export async function createTransform(uri: vscode.Uri | undefined) {
   try {
-    vscode.window.showInformationMessage(`Move2Kube: Starting transform command...`); // TODO: Window should fade away.
-
+    showTimedInformationMessage(`Move2Kube: Starting transform command...`, 3000);
     const terminal = getTerminalForDesktopCommands();
     const cwd =
       uri?.fsPath ||
@@ -63,26 +80,26 @@ export async function createTransform(uri: vscode.Uri | undefined) {
   return false; // Maybe remove this return statement.
 }
 
-export async function checkForUpdates() {
+export async function createCustomizationTransform(uri: vscode.Uri | undefined) {
   try {
-    vscode.window.withProgress(
-      {
-        location: vscode.ProgressLocation.Notification,
-        title: "Checking for updates...",
-        cancellable: false,
-      },
-      async (progress) => {
-        try {
-          progress.report({ increment: 0 });
-          const latestVersion = await getLatestVersionFromGithub();
-          vscode.window.showInformationMessage(`Latest Version is : ${latestVersion}`);
-        } catch (error) {
-          vscode.window.showErrorMessage("Error checking for updates");
-        }
-      }
+    showTimedInformationMessage(
+      `Move2Kube: Starting transform command with customizations...`,
+      3000
     );
+    const terminal = getTerminalForDesktopCommands();
+    const cwd =
+      uri?.fsPath ||
+      (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0].uri.fsPath) ||
+      process.cwd();
+
+    const customizationFolder = await selectFolder("Select customization folder");
+
+    terminal.show();
+    terminal.sendText(`move2kube transform -s ${cwd} -c ${customizationFolder} --qa-skip`); // Remove qa-skip flag later.
   } catch (err) {
-    vscode.window.showErrorMessage(`Failed to check for updates.\n [ERROR] : ${err}`);
+    vscode.window.showErrorMessage(
+      `Failed to run transform with customizations.\n [ERROR] : ${err}`
+    );
   }
   return false;
 }
