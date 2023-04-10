@@ -1,7 +1,12 @@
 import * as vscode from "vscode";
 import * as child_process from "child_process";
 import { getLatestVersionFromGithub } from "./checkCLI";
-import { getTerminalForDesktopCommands, selectFolder, showTimedInformationMessage } from "./utils";
+import {
+  getTerminalForDesktopCommands,
+  getUserConfigOption,
+  selectFolder,
+  showTimedInformationMessage,
+} from "./utils";
 
 let outputChannel: vscode.OutputChannel;
 
@@ -72,8 +77,15 @@ export async function createTransform(uri: vscode.Uri | undefined) {
       (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0].uri.fsPath) ||
       process.cwd();
 
+    let command = `move2kube transform -s ${cwd}`;
+    const args = await getUserConfigOption();
+
+    if (args.length > 0) {
+      command += ` ${args.join(` `)}`;
+    }
+
     terminal.show();
-    terminal.sendText(`move2kube transform -s ${cwd}`);
+    terminal.sendText(command);
   } catch (err) {
     vscode.window.showErrorMessage(`Failed to run transform.\n [ERROR] : ${err}`);
   }
@@ -94,8 +106,15 @@ export async function createCustomizationTransform(uri: vscode.Uri | undefined) 
 
     const customizationFolder = await selectFolder("Select customization folder");
 
+    let command = `move2kube transform -s ${cwd} -c ${customizationFolder}`;
+
+    const args = await getUserConfigOption();
+    if (args.length > 0) {
+      command += ` ${args.join(` `)}`;
+    }
+
     terminal.show();
-    terminal.sendText(`move2kube transform -s ${cwd} -c ${customizationFolder} --qa-skip`); // Remove qa-skip flag later.
+    terminal.sendText(command);
   } catch (err) {
     vscode.window.showErrorMessage(
       `Failed to run transform with customizations.\n [ERROR] : ${err}`
