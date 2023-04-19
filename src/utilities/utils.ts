@@ -1,5 +1,10 @@
+import path = require("path");
+import fs = require("fs");
+
 import { title } from "process";
 import * as vscode from "vscode";
+import * as os from "os";
+import { pluginOutput } from "./constants";
 
 let outputChannel: vscode.OutputChannel;
 
@@ -71,13 +76,16 @@ export async function selectFile(title: string | ""): Promise<string | undefined
 }
 
 export async function getUserConfigOption(): Promise<string[]> {
-  const selectFileOption = "Select File";
-  const enterInTerminalOption = "Answer config in terminal";
-  const skipOption = "Skip : Uses default";
+  const selectFileOption = "No, I will provide a config file";
+  const enterInTerminalOption = "Yes (default)";
+  const skipOption = "Skip all questions";
 
   const userChoice = await vscode.window.showQuickPick(
-    [selectFileOption, enterInTerminalOption, skipOption],
-    { placeHolder: "Select how you would like to add config details" }
+    [enterInTerminalOption, selectFileOption, skipOption],
+    {
+      placeHolder:
+        "Move2Kube will ask a few questions, do you want to answer them in the terminal?",
+    }
   );
 
   let args: string[] = [];
@@ -101,4 +109,61 @@ export async function getUserConfigOption(): Promise<string[]> {
   }
 
   return args;
+}
+
+export async function showOutputFolderInWorkspace(path: string) {
+  const yes = "Yes";
+  const no = "No";
+
+  const userChoice = await vscode.window.showQuickPick([yes, no], {
+    placeHolder: "Do you wish to add the output folder to workspace?",
+  });
+
+  switch (userChoice) {
+    case yes:
+      updateVSCodeWorkspaceFolders(vscode.Uri.file(path));
+    default:
+      break;
+  }
+}
+
+export function updateVSCodeWorkspaceFolders(path: vscode.Uri) {
+  const { workspaceFolders } = vscode.workspace;
+  vscode.workspace.updateWorkspaceFolders(workspaceFolders ? workspaceFolders.length : 0, 0, {
+    uri: path,
+  });
+}
+
+export function posixToWindowsPath(posixPath: string): string {
+  const posix = path.posix;
+  const win32 = path.win32;
+
+  const parsedPosixPath = posix.parse(posixPath);
+  const convertedPath = win32.format(parsedPosixPath);
+
+  return convertedPath;
+}
+
+/*
+Terminal: vscode.Terminal is used for creating and moving between directories.
+cwd: The source folder on which "transform" or other command is clicked. It is needed as the output folder should be
+generated in the same level as source.
+*/
+export function changeOutputLocation(terminal: vscode.Terminal, cwd: string): string {
+  // All generated output is stored in a folder name m2kpluginoutput.
+  const outputFolder = path.join(cwd, "..", pluginOutput);
+
+  const mkdirCommand =
+    os.platform() === "win32"
+      ? `mkdir ${posixToWindowsPath(outputFolder)}`
+      : `mkdir -p ${outputFolder}`;
+
+  const cdCommand =
+    os.platform() === "win32" ? `cd ${posixToWindowsPath(outputFolder)}` : `cd ${outputFolder}`;
+
+  if (!fs.existsSync(outputFolder)) {
+    terminal.sendText(`${mkdirCommand}`);
+  }
+  terminal.sendText(`${cdCommand}`);
+  return outputFolder;
 }
