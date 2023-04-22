@@ -59,5 +59,8 @@ jspm_packages/
 .pnp.*
 
 # build
-./out
-./out/*
+out/
+
+# packages
+*.vsix
+move2kube-vscode-plugin-*.vsix

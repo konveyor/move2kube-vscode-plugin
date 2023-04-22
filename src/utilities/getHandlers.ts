@@ -2,10 +2,13 @@ import * as vscode from "vscode";
 import * as child_process from "child_process";
 import { getLatestVersionFromGithub } from "./checkCLI";
 import {
+  changeOutputLocation,
   getTerminalForDesktopCommands,
   getUserConfigOption,
   selectFolder,
+  showOutputFolderInWorkspace,
   showTimedInformationMessage,
+  updateVSCodeWorkspaceFolders,
 } from "./utils";
 
 let outputChannel: vscode.OutputChannel;
@@ -84,6 +87,13 @@ export async function createTransform(uri: vscode.Uri | undefined) {
       command += ` ${args.join(` `)}`;
     }
 
+    const outputPath = changeOutputLocation(terminal, cwd);
+    vscode.window.showInformationMessage(
+      `Move2Kube output will be generated in ${outputPath} location.`
+    );
+
+    await showOutputFolderInWorkspace(outputPath);
+
     terminal.show();
     terminal.sendText(command);
   } catch (err) {
@@ -112,6 +122,13 @@ export async function createCustomizationTransform(uri: vscode.Uri | undefined) 
     if (args.length > 0) {
       command += ` ${args.join(` `)}`;
     }
+
+    const outputPath = changeOutputLocation(terminal, cwd);
+    vscode.window.showInformationMessage(
+      `Move2Kube output will be generated in ${outputPath} location.`
+    );
+
+    await showOutputFolderInWorkspace(outputPath);
 
     terminal.show();
     terminal.sendText(command);
