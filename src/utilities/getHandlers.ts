@@ -8,7 +8,6 @@ import {
   selectFolder,
   showOutputFolderInWorkspace,
   showTimedInformationMessage,
-  updateVSCodeWorkspaceFolders,
 } from "./utils";
 
 let outputChannel: vscode.OutputChannel;
@@ -92,7 +91,10 @@ export async function createTransform(uri: vscode.Uri | undefined) {
       `Move2Kube output will be generated in ${outputPath} location.`
     );
 
-    await showOutputFolderInWorkspace(outputPath);
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(cwd));
+    if (workspaceFolder && workspaceFolder.uri.fsPath === cwd) {
+      await showOutputFolderInWorkspace(outputPath);
+    }
 
     terminal.show();
     terminal.sendText(command);
@@ -128,7 +130,10 @@ export async function createCustomizationTransform(uri: vscode.Uri | undefined) 
       `Move2Kube output will be generated in ${outputPath} location.`
     );
 
-    await showOutputFolderInWorkspace(outputPath);
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(cwd));
+    if (workspaceFolder && workspaceFolder.uri.fsPath === cwd) {
+      await showOutputFolderInWorkspace(outputPath);
+    }
 
     terminal.show();
     terminal.sendText(command);
