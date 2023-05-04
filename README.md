@@ -1,38 +1,39 @@
-# Move2Kube-VSCode-Extension
+<h1 align="center">
+  Move2Kube Extension for VS Code
+</h1>
 
-A VSCode extension for the Move2Kube application.
+The [Move2Kube](https://move2kube.konveyor.io/) extension helps developers accelerate the process of re-platforming to Kubernetes by analyzing source files.
 
-## Documentation
+## Installation
 
-For a deeper dive into how this works, read the guides below.
+Install the `move2kube` cli application in your machine first. This is a pre-requisite to run the extension.
 
-- [Extension structure](./docs/extension-structure.md)
-- [Extension commands](./docs/extension-commands.md)
-- [Extension development cycle](./docs/extension-development-cycle.md)
+Please visit the [Move2Kube Command Line Tool Installation](https://move2kube.konveyor.io/installation/cli) for step-by-step guide.
 
-## Run The Code
+`NOTE: Please make sure move2kube is added to the path. Without that, the extension will not work and throw error.`
 
-```bash
-# Navigate into project directory
-cd hello-world
+## Features
 
-# Install dependencies for both the extension and webview UI source code
-npm run install:all
+- Discover and create a plan file based on an input directory. (Work in progress)
+- Transform artifacts using move2kube plan.
 
-# Build webview UI source code
-npm run build:webview
+## Usage
 
-# Open sample in VS Code
-code .
-```
+- Right click on your folder where you would like to run `move2kube`.
+- Select your desired `move2kube` option.
+- The output will be generated in a `move2kubepluginoutput` folder which will be in the same level as the folder that was selected for the option.
 
-Once the code is open inside VS Code you can run the extension by doing the following:
+![Running `transform` command using m2k plugin](./assets/m2k-transform.gif)
 
-1. Press `F5` to open a new Extension Development Host window
-2. Inside the host window, open the command palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac) and type `Move2Kube: Hello`.
-3. For other implemented functions (suppose `plan`), open the command pallete and type `Move2Kube: Plan`.
-4. You can also run some functions on the context menu. Right click on the File Workspace and select the Move2Kube plan which is exposed to context menu.
+## References
 
-## Code of Conduct
-
-Refer to Konveyor's Code of Conduct [here](https://github.com/konveyor/community/blob/main/CODE_OF_CONDUCT.md).
+> [Installation](https://move2kube.konveyor.io/installation)
+<br>
+> [Tutorial](https://move2kube.konveyor.io/tutorials) 
+<br>
+> [Concepts](https://move2kube.konveyor.io/concepts) 
+<br>
+> [Transformers](https://move2kube.konveyor.io/transformers`)
+<br>
+> [Presentation](https://move2kube.konveyor.io/presentation)
+<br>

@@ -1,10 +1,9 @@
 import path = require("path");
 import fs = require("fs");
 
-import { title } from "process";
 import * as vscode from "vscode";
 import * as os from "os";
-import { pluginOutput } from "./constants";
+import { defaultProjectName, pluginOutput } from "./constants";
 
 let outputChannel: vscode.OutputChannel;
 
@@ -37,6 +36,7 @@ export async function selectFolder(title: string | ""): Promise<string | undefin
   return undefined;
 }
 
+// Maybe remove this.
 export function showTimedInformationMessage(message: string, duration: number): void {
   const closeMessageItem: vscode.MessageItem = { title: "Close" };
   const promise = vscode.window.showInformationMessage(message, closeMessageItem);
@@ -111,6 +111,15 @@ export async function getUserConfigOption(): Promise<string[]> {
   return args;
 }
 
+export async function getProjectName(): Promise<string> {
+  const userInput = await vscode.window.showInputBox({
+    value: defaultProjectName,
+    prompt: `Specify the project name. (or press Enter for ${defaultProjectName})`,
+  });
+
+  return userInput ? userInput : defaultProjectName;
+}
+
 export async function showOutputFolderInWorkspace(path: string) {
   const yes = "Yes";
   const no = "No";
@@ -166,4 +175,74 @@ export function changeOutputLocation(terminal: vscode.Terminal, cwd: string): st
   }
   terminal.sendText(`${cdCommand}`);
   return outputFolder;
+}
+export async function copyDirectory(sourceUri: vscode.Uri, destUri: vscode.Uri): Promise<void> {
+  try {
+    await vscode.workspace.fs.copy(sourceUri, destUri, { overwrite: true });
+  } catch (error) {
+    if (error instanceof vscode.FileSystemError) {
+      if (error.code === "FileNotFound") {
+        vscode.window.showErrorMessage(
+          `Failed to copy '${sourceUri.path}' to '${destUri.path}': Source not found.`
+        );
+      } else if (error.code === "PermissionDenied") {
+        vscode.window.showErrorMessage(
+          `Failed to copy '${sourceUri.path}' to '${destUri.path}': Permission denied.`
+        );
+      } else {
+        vscode.window.showErrorMessage(
+          `Failed to copy '${sourceUri.path}' to '${destUri.path}': ${error.message}`
+        );
+      }
+    } else {
+      vscode.window.showErrorMessage(
+        `Failed to copy '${sourceUri.path}' to '${destUri.path}': ${(<Error>error).message}`
+      );
+    }
+  }
+}
+
+export function showTimedStatusBarItem(
+  message: string,
+  timeout: number = 10000,
+  steps: number = 15
+) {
+  const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+  statusBarItem.text = message;
+  statusBarItem.color = "#ffffff";
+  statusBarItem.show();
+
+  let opacity = 1.0;
+  let step = 0;
+
+  const fadeOut = setInterval(() => {
+    opacity = 1.0 - step / steps;
+    statusBarItem.color = `rgba(255, 255, 255, ${opacity})`;
+    step++;
+    if (step >= steps) {
+      clearInterval(fadeOut);
+      statusBarItem.hide();
+    }
+  }, timeout / steps);
+}
+
+export async function addHelmChart(path: string): Promise<string | undefined> {
+  const yes = "Yes";
+  const no = "No";
+  const userChoice = await vscode.window.showQuickPick([yes, no], {
+    placeHolder: "Do you wish to add the helm chart folder to project?",
+  });
+  switch (userChoice) {
+    case yes:
+      return path;
+    default:
+      return undefined;
+  }
+}
+
+export async function createTempDir(): Promise<vscode.Uri | undefined> {
+  const tempDirName = `m2k-temp-dir-${Date.now()}`;
+  const tempDirUri = vscode.Uri.file(path.join(os.tmpdir(), tempDirName));
+  await vscode.workspace.fs.createDirectory(tempDirUri);
+  return tempDirUri;
 }

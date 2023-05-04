@@ -2,10 +2,12 @@ import * as vscode from "vscode";
 import { HelloWorldPanel } from "./panels/HelloWorldPanel";
 import { isCLIInstalled } from "./utilities/checkCLI";
 import {
+  addHelmChartOption,
   checkForUpdates,
   createCustomizationTransform,
   createTransform,
   makePlan,
+  transformAllOptions,
 } from "./utilities/getHandlers";
 
 import { setOutputChannelForDesktopCommands } from "./utilities/utils";
@@ -46,10 +48,24 @@ export async function activate(context: vscode.ExtensionContext) {
     createCustomizationTransform
   );
 
+  // `transform` command with all options.
+  const allOptionsTransformCommand = vscode.commands.registerCommand(
+    "m2k.transformAllOptions",
+    transformAllOptions
+  );
+
+  // `addHelmChart` option.
+  const addHelmChartCommand = vscode.commands.registerCommand(
+    "m2k.addHelmChart",
+    addHelmChartOption
+  );
+
   // Add command to the extension context
   context.subscriptions.push(showHelloWorldCommand);
   context.subscriptions.push(transformCommand);
   context.subscriptions.push(customizationTransformCommand);
   context.subscriptions.push(planCommand);
+  context.subscriptions.push(allOptionsTransformCommand);
+  context.subscriptions.push(addHelmChartCommand);
   context.subscriptions.push(checkForUpdatesCommand);
 }
