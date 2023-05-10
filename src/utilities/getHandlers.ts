@@ -107,7 +107,6 @@ export async function createTransform(uri: vscode.Uri | undefined) {
 
     terminal.show();
     terminal.sendText(command, false);
-    terminal.sendText("; exit"); // We want to exit out the terminal after command ends.
   } catch (err) {
     vscode.window.showErrorMessage(`Failed to run transform.\n [ERROR] : ${err}`);
   }
@@ -158,7 +157,6 @@ export async function createCustomizationTransform(uri: vscode.Uri | undefined) 
 
     terminal.show();
     terminal.sendText(command);
-    terminal.sendText("; exit"); // We want to exit out the terminal after command ends.
   } catch (err) {
     vscode.window.showErrorMessage(
       `Failed to run transform with customizations.\n [ERROR] : ${err}`
@@ -281,7 +279,6 @@ export async function transformAllOptions(uri: vscode.Uri | undefined) {
 
     terminal.show();
     terminal.sendText(command);
-    terminal.sendText("; exit"); // We want to exit out the terminal after command ends.
   } catch (err) {
     vscode.window.showErrorMessage(
       `Failed to run transform with customizations.\n [ERROR] : ${err}`
