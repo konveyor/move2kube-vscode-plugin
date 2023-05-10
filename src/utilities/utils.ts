@@ -158,9 +158,13 @@ Terminal: vscode.Terminal is used for creating and moving between directories.
 cwd: The source folder on which "transform" or other command is clicked. It is needed as the output folder should be
 generated in the same level as source.
 */
-export function changeOutputLocation(terminal: vscode.Terminal, cwd: string): string {
-  // All generated output is stored in a folder name m2kpluginoutput.
-  const outputFolder = path.join(cwd, "..", pluginOutput);
+export function changeOutputLocation(
+  terminal: vscode.Terminal,
+  cwd: string,
+  projectName: string = defaultProjectName
+): string {
+  // All generated output is stored in a folder name defined by variable `pluginOutput/projectName`.
+  const outputFolder = path.join(cwd, "..", pluginOutput, projectName);
 
   const mkdirCommand =
     os.platform() === "win32"

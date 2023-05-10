@@ -106,7 +106,8 @@ export async function createTransform(uri: vscode.Uri | undefined) {
     }
 
     terminal.show();
-    terminal.sendText(command);
+    terminal.sendText(command, false);
+    terminal.sendText("; exit"); // We want to exit out the terminal after command ends.
   } catch (err) {
     vscode.window.showErrorMessage(`Failed to run transform.\n [ERROR] : ${err}`);
   }
@@ -136,7 +137,12 @@ export async function createCustomizationTransform(uri: vscode.Uri | undefined) 
 
     const args = await getUserConfigOption();
 
-    const outputPath = changeOutputLocation(terminal, cwd);
+    const projectName = await getProjectName();
+    if (projectName !== defaultProjectName) {
+      args.push("--name", projectName);
+    }
+
+    const outputPath = changeOutputLocation(terminal, cwd, projectName);
     vscode.window.showInformationMessage(
       `Move2Kube output will be generated in ${outputPath} location.`
     );
@@ -152,6 +158,7 @@ export async function createCustomizationTransform(uri: vscode.Uri | undefined) 
 
     terminal.show();
     terminal.sendText(command);
+    terminal.sendText("; exit"); // We want to exit out the terminal after command ends.
   } catch (err) {
     vscode.window.showErrorMessage(
       `Failed to run transform with customizations.\n [ERROR] : ${err}`
@@ -175,7 +182,7 @@ export async function addHelmChartOption(uri: vscode.Uri | undefined) {
     // Create a temporary folder.
     const tempDirUri = await createTempDir();
     if (tempDirUri !== undefined) {
-      args.push("--output", tempDirUri.fsPath);
+      terminal.sendText(`cd ${tempDirUri?.fsPath}`);
     } else {
       vscode.window.showErrorMessage(
         `Error creating temporary directory which is necessary for running this move2kube option.`
@@ -189,7 +196,7 @@ export async function addHelmChartOption(uri: vscode.Uri | undefined) {
     // Here, we are using temp folder as our directory where transformation will be generated.
     terminal.show();
     terminal.sendText(command, false);
-    terminal.sendText("; exit");
+    terminal.sendText("; exit"); // We want to exit out the terminal.
 
     // For now its '/myproject'. Later change it with "project name" if you are allowing users to change the output folder name.
     let helmChartPath = tempDirUri?.fsPath + "/myproject/deploy/yamls-parameterized/helm-chart";
@@ -201,18 +208,21 @@ export async function addHelmChartOption(uri: vscode.Uri | undefined) {
       if (closedTerminal === terminal) {
         disposeToken.dispose();
         if (terminal.exitStatus !== undefined) {
+          // This overwrites if there already exists a directory called "helm-chart".
+          // TODO: If found "helm-chart" inside, ask the user whether to overwrite or create something like "helm-chart-m2k-1".
           await copyDirectory(
             vscode.Uri.file(helmChartPath),
-            vscode.Uri.file(path.join(cwd, "..", pluginOutput, "helm-chart"))
+            vscode.Uri.file(path.join(cwd, "helm-chart"))
           );
+          // Delete the temporary folder after copying.
+          await vscode.workspace.fs.delete(tempDirUri, { recursive: true, useTrash: false });
         } else {
+          // Delete the temporary folder even if it fails. Keeping it inside if statements for now.
+          await vscode.workspace.fs.delete(tempDirUri, { recursive: true, useTrash: false });
           vscode.window.showErrorMessage(`Terminal exited with undefined status.`);
         }
       }
     });
-
-    // Delete the temporary folder.
-    await vscode.workspace.fs.delete(tempDirUri, { recursive: true, useTrash: false });
   } catch (err) {
     vscode.window.showErrorMessage(
       `Failed to run transform with addHelmChartOption.\n [ERROR] : ${err}`
@@ -257,7 +267,7 @@ export async function transformAllOptions(uri: vscode.Uri | undefined) {
       outputDirectory = cwd;
     }
 
-    let outputPath = changeOutputLocation(terminal, outputDirectory);
+    let outputPath = changeOutputLocation(terminal, outputDirectory, projectName);
     vscode.window.showInformationMessage(outputPath);
     await showOutputFolderInWorkspace(outputPath);
 
@@ -271,6 +281,7 @@ export async function transformAllOptions(uri: vscode.Uri | undefined) {
 
     terminal.show();
     terminal.sendText(command);
+    terminal.sendText("; exit"); // We want to exit out the terminal after command ends.
   } catch (err) {
     vscode.window.showErrorMessage(
       `Failed to run transform with customizations.\n [ERROR] : ${err}`
