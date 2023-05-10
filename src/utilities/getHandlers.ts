@@ -106,7 +106,7 @@ export async function createTransform(uri: vscode.Uri | undefined) {
     }
 
     terminal.show();
-    terminal.sendText(command, false);
+    terminal.sendText(command);
   } catch (err) {
     vscode.window.showErrorMessage(`Failed to run transform.\n [ERROR] : ${err}`);
   }
