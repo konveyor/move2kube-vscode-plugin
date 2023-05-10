@@ -3,12 +3,17 @@
   "displayName": "m2k",
   "description": "A VSCode extension for the Move2Kube application.",
   "version": "0.0.1",
+  "publisher": "Konveyor",
   "engines": {
     "vscode": "^1.76.0"
   },
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/konveyor/move2kube-vscode-plugin"
+  },
   "preview": true,
   "activationEvents": [],
   "main": "./out/extension.js",
@@ -23,7 +28,7 @@
       },
       {
         "command": "m2k.transform",
-        "title": "Move2Kube: Transform"
+        "title": "Move2Kube: Simple Transform"
       },
       {
         "command": "m2k.customizationTransform",
@@ -55,26 +60,35 @@
         },
         {
           "when": "explorerResourceIsFolder",
-          "command": "m2k.transform",
+          "command": "m2k.addHelmChart",
           "group": "move2kube@2"
         },
         {
-          "when": "explorerResourceIsFolder",
-          "command": "m2k.customizationTransform",
+          "submenu": "transform",
           "group": "move2kube@3"
+        }
+      ],
+      "transform": [
+        {
+          "command": "m2k.transform",
+          "group": "move2kube@3@1"
         },
         {
-          "when": "explorerResourceIsFolder",
-          "command": "m2k.addHelmChart",
-          "group": "move2kube@4"
+          "command": "m2k.customizationTransform",
+          "group": "move2kube@3@2"
         },
         {
-          "when": "explorerResourceIsFolder",
           "command": "m2k.transformAllOptions",
-          "group": "move2kube@5"
+          "group": "move2kube@3@3"
         }
       ]
-    }
+    },
+    "submenus": [
+      {
+        "label": "Move2Kube: Run Transform",
+        "id": "transform"
+      }
+    ]
   },
   "scripts": {
     "install:all": "npm install && cd webview-ui && npm install",
