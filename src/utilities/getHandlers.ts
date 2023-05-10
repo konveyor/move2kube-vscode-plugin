@@ -106,7 +106,7 @@ export async function createTransform(uri: vscode.Uri | undefined) {
     }
 
     terminal.show();
-    terminal.sendText(command);
+    terminal.sendText(command, true);
   } catch (err) {
     vscode.window.showErrorMessage(`Failed to run transform.\n [ERROR] : ${err}`);
   }
@@ -156,7 +156,7 @@ export async function createCustomizationTransform(uri: vscode.Uri | undefined) 
     }
 
     terminal.show();
-    terminal.sendText(command);
+    terminal.sendText(command, true);
   } catch (err) {
     vscode.window.showErrorMessage(
       `Failed to run transform with customizations.\n [ERROR] : ${err}`
@@ -247,18 +247,22 @@ export async function transformAllOptions(uri: vscode.Uri | undefined) {
       args.push("--name", projectName);
     }
 
-    const planPath = await selectFile(`Specify a plan to to execute. (default "m2k.plan")`);
+    const planPath = await selectFile(
+      `Specify a plan to to execute. (or Press ESC to skip this.")`
+    );
     if (planPath !== undefined) {
       args.push("--plan", planPath);
     }
 
-    const transformSelector = await selectFile(`Specify the transform selector.`);
+    const transformSelector = await selectFile(
+      `Specify the transform selector. (or Press ESC to skip this.)`
+    );
     if (transformSelector !== undefined) {
       args.push("--transformer-selector", transformSelector);
     }
 
     let outputDirectory = await selectFolder(
-      "Path for Output. Default will be directory with project name."
+      "Path for Output. (or Press ESC to skip this. Default will be directory with project name.)"
     );
 
     if (outputDirectory === undefined) {
@@ -266,9 +270,11 @@ export async function transformAllOptions(uri: vscode.Uri | undefined) {
     }
 
     let outputPath = changeOutputLocation(terminal, outputDirectory, projectName);
-    vscode.window.showInformationMessage(outputPath);
-    await showOutputFolderInWorkspace(outputPath);
 
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(cwd));
+    if (workspaceFolder && workspaceFolder.uri.fsPath === cwd) {
+      await showOutputFolderInWorkspace(outputPath);
+    }
     if (args.length > 0) {
       command += ` ${args.join(` `)}`;
     }
@@ -278,7 +284,7 @@ export async function transformAllOptions(uri: vscode.Uri | undefined) {
     );
 
     terminal.show();
-    terminal.sendText(command);
+    terminal.sendText(command, true);
   } catch (err) {
     vscode.window.showErrorMessage(
       `Failed to run transform with customizations.\n [ERROR] : ${err}`

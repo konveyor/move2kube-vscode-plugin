@@ -114,7 +114,7 @@ export async function getUserConfigOption(): Promise<string[]> {
 export async function getProjectName(): Promise<string> {
   const userInput = await vscode.window.showInputBox({
     value: defaultProjectName,
-    prompt: `Specify the project name. (or press Enter for ${defaultProjectName})`,
+    prompt: `Specify the project name.`,
   });
 
   return userInput ? userInput : defaultProjectName;
@@ -175,11 +175,13 @@ export function changeOutputLocation(
     os.platform() === "win32" ? `cd ${posixToWindowsPath(outputFolder)}` : `cd ${outputFolder}`;
 
   if (!fs.existsSync(outputFolder)) {
-    terminal.sendText(`${mkdirCommand}`);
+    terminal.sendText(`${mkdirCommand} && ${cdCommand} ; `);
+  } else {
+    terminal.sendText(`${cdCommand} ; `);
   }
-  terminal.sendText(`${cdCommand}`);
   return outputFolder;
 }
+
 export async function copyDirectory(sourceUri: vscode.Uri, destUri: vscode.Uri): Promise<void> {
   try {
     await vscode.workspace.fs.copy(sourceUri, destUri, { overwrite: true });
