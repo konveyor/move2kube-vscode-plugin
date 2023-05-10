@@ -1,8 +1,8 @@
 {
   "name": "move2kube-vscode-plugin",
-  "displayName": "m2k",
+  "displayName": "Move2Kube",
   "description": "A VSCode extension for the Move2Kube application.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "Konveyor",
   "engines": {
     "vscode": "^1.76.0"
