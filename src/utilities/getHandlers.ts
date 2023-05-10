@@ -248,7 +248,7 @@ export async function transformAllOptions(uri: vscode.Uri | undefined) {
     }
 
     const planPath = await selectFile(
-      `Specify a plan to to execute. (or Press ESC for default "m2k.plan")`
+      `Specify a plan to to execute. (or Press ESC to skip this.")`
     );
     if (planPath !== undefined) {
       args.push("--plan", planPath);
