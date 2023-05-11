@@ -4,6 +4,7 @@
   "description": "A VSCode extension for the Move2Kube application.",
   "version": "0.0.2",
   "publisher": "Konveyor",
+  "icon": "move2kube-logo-128x128.png",
   "engines": {
     "vscode": "^1.76.0"
   },
