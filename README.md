@@ -24,6 +24,7 @@ Please visit the [Move2Kube Command Line Tool Installation](https://move2kube.ko
 - The output will be generated in a `move2kubepluginoutput` folder which will be in the same level as the folder that was selected for the option.
 
 ![Running `transform` command using m2k plugin](./assets/m2k-transform.gif)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkonveyor%2Fmove2kube-vscode-plugin.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkonveyor%2Fmove2kube-vscode-plugin?ref=badge_shield)
 
 ## References
 
@@ -37,3 +38,7 @@ Please visit the [Move2Kube Command Line Tool Installation](https://move2kube.ko
 <br>
 > [Presentation](https://move2kube.konveyor.io/presentation)
 <br>
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fkonveyor%2Fmove2kube-vscode-plugin.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fkonveyor%2Fmove2kube-vscode-plugin?ref=badge_large)
